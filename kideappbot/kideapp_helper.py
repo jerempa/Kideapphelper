@@ -71,7 +71,7 @@ def choose_correct_item(inventoryIds):
     post_request(itemId)  # give the item id as a parametre to another function so that the POST request can be made
 
 def post_request(itemId):
-    headers = {'Authorization': 'Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6ImY5YWI4MGUyZTk2YjQxOTE4ZjAwNDIzNmYzOGU5ODc5IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImplcmUucGFua2thQGdtYWlsLmNvbSIsInN1YiI6ImplcmUucGFua2thQGdtYWlsLmNvbSIsInVzZXJfaWQiOiJkNWY3Y2IxNi0xNjIzLTQ3ZjQtOWMxZi00NDc3Zjc5MWMxNTciLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIwIiwibmJmIjoxNjcwNzczMzM0LCJleHAiOjE2ODYzMjUzMzQsImlzcyI6Imh0dHBzOi8vYXV0aC5raWRlLmFwcCIsImF1ZCI6IjU2ZDljYmUyMmE1ODQzMmI5N2MyODdlYWRkYTA0MGRmIn0.AqoMcUgLTtqGm8yjy_ROezvxejc0lmNGng9gqEPbKMEdXK1fbSg8zN3TFPJQ8oVBDntQCzRgOhspJIr5gIvjSQ', 'Content-Type': 'application/json; charset=UTF-8'}
+    headers = {'Authorization': 'Bearer xyz', 'Content-Type': 'application/json; charset=UTF-8'}
     data = {"toCreate":[{"inventoryId":itemId,"quantity":1,"productVariantUserForm":None}], "toCancel": []}
     url = "https://api.kide.app/api/reservations"
     response = requests.post(url, headers=headers, json=data) #make a post request with correct data and headers
