@@ -1,23 +1,28 @@
-from selenium import webdriver
-import chromedriver_binary
+#from selenium import webdriver
+#import chromedriver_binary
 import time
 import requests
-from bs4 import BeautifulSoup
 import datetime
 
 def main():
-    wd = webdriver.Chrome()
-    wd.maximize_window()
-    wd.get("https://kide.app/events/a696a71b-b6ec-4852-bafa-6678aa03b3b4") #open the right web page
+    #wd = webdriver.Chrome()
+    #wd.maximize_window()
+    #wd.get("https://kide.app/events/a696a71b-b6ec-4852-bafa-6678aa03b3b4") #open the right web page
     #synchronize_time()
-    get_request(wd)
+    inventoryIds = get_request()
+    itemId = choose_correct_item(inventoryIds)
+    adding_to_cart = post_request(itemId)
+    if adding_to_cart == True:
+        print("Ticket succesfully added to your cart!")
+    else:
+        print(f"Adding ticket to cart failed. Error code: {adding_to_cart}")
 
 def synchronize_time():
     pass #thought about making a function for syncing computer time but haven't implemented it yet
 
 
 
-def get_request(wd):
+def get_request():
     event_url = str(input("Insert event url, the address after 'events/': "))
     url = f"https://api.kide.app/api/products/{event_url}"
     target_time = datetime.time(hour=19, minute=53, second=10)
@@ -38,8 +43,8 @@ def get_request(wd):
         key = data['model']
         variants = key['variants']
     inventoryIds = loop_through_variants(variants)
-    print(inventoryIds)
-    choose_correct_item(inventoryIds)
+    print(inventoryIds) #print the dict so user knows what to choose
+    return inventoryIds #return the ids, their name, price and availability
 
 def loop_through_variants(variants):
     inventoryIds = dict() #process the request and get value that we want
@@ -68,7 +73,7 @@ def choose_correct_item(inventoryIds):
         itemId = key
         if right_item in value and value[2] != 0:
             break #break the loop if the item is correct and available, availability != 0
-    post_request(itemId)  # give the item id as a parametre to another function so that the POST request can be made
+    return itemId #return the itemId to the main function
 
 def post_request(itemId):
     headers = {'Authorization': 'Bearer xyz', 'Content-Type': 'application/json; charset=UTF-8'}
@@ -76,9 +81,9 @@ def post_request(itemId):
     url = "https://api.kide.app/api/reservations"
     response = requests.post(url, headers=headers, json=data) #make a post request with correct data and headers
     if response.status_code == 200:
-        print("Ticket succesfully added to your cart!") #if the response status code is 200, this means the request was successful
+        return True #if the response status code is 200, this means the request was successful
     else:
-        f"Error:{response.status_code}. Adding ticket to the cart failed"
+        return response.status_code #else return the error code
 
 main()
 
