@@ -8,3 +8,7 @@ At the moment I use time.sleep()-commands for waiting for certain elements to lo
 
 ## Future plan update
 I'm not going to update the autoclicker-version any more, as the other one is more reliable and thus better, in my opinion. Some unittests are in progress.
+
+### Installing libraries
+
+To run the program you need to install a couple of libraries, this can be done e.g. running command pip install "library name"
