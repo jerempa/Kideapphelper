@@ -8,6 +8,7 @@ def main():
     #wd = webdriver.Chrome()
     #wd.maximize_window()
     #wd.get("https://kide.app/events/a696a71b-b6ec-4852-bafa-6678aa03b3b4") #open the right web page
+    #the webdriver isn't necessary
     #synchronize_time()
     inventoryIds = get_request()
     itemId = choose_correct_item(inventoryIds)
@@ -25,7 +26,7 @@ def synchronize_time():
 def get_request():
     event_url = str(input("Insert event url, the address after 'events/': "))
     url = f"https://api.kide.app/api/products/{event_url}"
-    target_time = datetime.time(hour=19, minute=53, second=10)
+    target_time = datetime.time(hour=12, minute=00, second=1)
     # while True:
     #     now = datetime.datetime.now()
     #     time = now.time()
@@ -37,14 +38,16 @@ def get_request():
     key = data['model']
     variants = key['variants']
     while len(variants) == 0:
-        time.sleep(0.25)
         response = requests.get(url)
         data = response.json()
         key = data['model']
         variants = key['variants']
     inventoryIds = loop_through_variants(variants)
     print(inventoryIds) #print the dict so user knows what to choose
-    return inventoryIds #return the ids, their name, price and availability
+    if len(inventoryIds) != 0:
+        return True
+    else:
+        return False #return boolean based on if the program was able to find the items
 
 def loop_through_variants(variants):
     inventoryIds = dict() #process the request and get value that we want
