@@ -1,92 +1,93 @@
-#from selenium import webdriver
-#import chromedriver_binary
 import time
 import requests
 import datetime
 
-def main():
-    #wd = webdriver.Chrome()
-    #wd.maximize_window()
-    #wd.get("https://kide.app/events/a696a71b-b6ec-4852-bafa-6678aa03b3b4") #open the right web page
-    #the webdriver isn't necessary
-    #synchronize_time()
-    inventoryIds = get_request()
-    itemId = choose_correct_item(inventoryIds)
-    adding_to_cart = post_request(itemId)
-    if adding_to_cart == True:
-        print("Ticket succesfully added to your cart!")
-    else:
-        print(f"Adding ticket to cart failed. Error code: {adding_to_cart}")
+class Functionality:
+    def __init__(self, url):
+        self.url = str(url)
+        self.variants = list()
+        self.inventoryIds = dict()
+        self.items = list()
+        self.name = None
+        self.itemId = str()
+        self.get_request()
+        self.loop_through_variants()
 
-def synchronize_time():
-    pass #thought about making a function for syncing computer time but haven't implemented it yet
+    def return_url(self):
+        return self.url
+
+    def return_variants(self):
+        return self.variants
+
+    def return_inventoryIds(self):
+        return self.inventoryIds
+
+    def return_itemId(self):
+        return self.itemId
+
+    def return_chosen_item(self):
+        return self.name
+
+    def return_list_of_items(self):
+        for key, value in self.inventoryIds.items():
+            self.items.append(value)
+        return self.items
+
+    def get_request(self):
+        url = f"https://api.kide.app/api/products/{self.url}"
+        #target_time = datetime.time(hour=12, minute=00, second=1)
+        # while True:
+        #     now = datetime.datetime.now()
+        #     time = now.time()
+        #     time_without_microseconds = time.replace(microsecond=0)
+        #     if time_without_microseconds == target_time:
+        #         break #loop until the tickets go on sale and we have information about the item ids
+        try:
+            response = requests.get(url)
+            data = response.json()
+            key = data['model']
+            self.variants = key['variants']
+        except requests.exceptions.JSONDecodeError:
+            pass
+        # while len(self.variants) == 0:
+        #     response = requests.get(url)
+        #     data = response.json()
+        #     key = data['model']
+        #     self.variants = key['variants'] #probably not needed anymore as there is timer for making the request
+
+    def loop_through_variants(self):
+        if len(self.variants) > 0:
+            for i in self.variants:
+                info_list = []
+                inventoryId = i['inventoryId']
+                name = i['name']
+                info_list.append(name)
+                price = i['pricePerItem']
+                info_list.append(price)
+                availability = i['availability']
+                info_list.append(availability)
+                self.inventoryIds[inventoryId] = info_list #add values to the dictionary that contain id, price, name and availability
+
+    def choose_correct_item(self, name):
+        for key, value in self.inventoryIds.items():
+            if str(value[0]) == name:
+                self.itemId = key #change variable based on what ticket user chose
+
+    def get_name_of_chosen_item(self, sender, dict):
+        for key, value in dict.items():
+            if sender == value:
+                self.name = key #get the name of the ticket user chose
+
+    def post_request(self, itemId, bearer_token):
+        headers = {'Authorization': f'Bearer {bearer_token}', 'Content-Type': 'application/json; charset=UTF-8'}
+        data = {"toCreate":[{"inventoryId":self.itemId,"quantity":1,"productVariantUserForm":None}], "toCancel": []}
+        url = "https://api.kide.app/api/reservations"
+        response = requests.post(url, headers=headers, json=data) #make a post request with correct data and headers
+
+        if response.status_code == 200:
+            return True #if the response status code is 200, this means the request was successful
+        else:
+            return False
 
 
-
-def get_request():
-    event_url = str(input("Insert event url, the address after 'events/': "))
-    url = f"https://api.kide.app/api/products/{event_url}"
-    target_time = datetime.time(hour=12, minute=00, second=1)
-    # while True:
-    #     now = datetime.datetime.now()
-    #     time = now.time()
-    #     time_without_microseconds = time.replace(microsecond=0)
-    #     if time_without_microseconds == target_time:
-    #         break #loop until the tickets go on sale and we have information about the item ids
-    response = requests.get(url)
-    data = response.json()
-    key = data['model']
-    variants = key['variants']
-    while len(variants) == 0:
-        response = requests.get(url)
-        data = response.json()
-        key = data['model']
-        variants = key['variants']
-    inventoryIds = loop_through_variants(variants)
-    print(inventoryIds) #print the dict so user knows what to choose
-    if len(inventoryIds) != 0:
-        return True
-    else:
-        return False #return boolean based on if the program was able to find the items
-
-def loop_through_variants(variants):
-    inventoryIds = dict() #process the request and get value that we want
-    for i in variants:
-        info_list = []
-        inventoryId = i['inventoryId']
-        name = i['name']
-        info_list.append(name)
-        price = i['pricePerItem']
-        info_list.append(price)
-        availability = i['availability']
-        info_list.append(availability)
-        inventoryIds[inventoryId] = info_list #add values to the dictionary that contain id, price, name and availability
-    return inventoryIds
-
-def choose_correct_item(inventoryIds):
-    itemId = str()
-    for key, value in inventoryIds.items():
-        right_item = str(input("Identify the right item, e.g name, price etc.: "))
-        if right_item.isnumeric():
-            right_item = int(right_item)
-        while right_item not in value:
-            right_item = str(input("The input was incorrect: "))
-            if right_item.isnumeric():
-                right_item = int(right_item) #loop until the user gives a item that is available
-        itemId = key
-        if right_item in value and value[2] != 0:
-            break #break the loop if the item is correct and available, availability != 0
-    return itemId #return the itemId to the main function
-
-def post_request(itemId):
-    headers = {'Authorization': 'Bearer xyz', 'Content-Type': 'application/json; charset=UTF-8'}
-    data = {"toCreate":[{"inventoryId":itemId,"quantity":1,"productVariantUserForm":None}], "toCancel": []}
-    url = "https://api.kide.app/api/reservations"
-    response = requests.post(url, headers=headers, json=data) #make a post request with correct data and headers
-    if response.status_code == 200:
-        return True #if the response status code is 200, this means the request was successful
-    else:
-        return response.status_code #else return the error code
-
-main()
 
