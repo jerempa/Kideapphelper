@@ -7,8 +7,8 @@ The project started with kideapp_autoclicker.py which was made with Selenium. La
 At the moment I use time.sleep()-commands for waiting for certain elements to load, however, I'm planning to switching it to Webdriver.wait(), so I don't have to assume and guess how much time it takes to elements to load. Also probably going to write some simple unittests for the program.
 
 ## Future plan update
-I'm not going to update the autoclicker-version any more, as the other one is more reliable and thus better, in my opinion. Some unittests are in progress.
+I'm not going to update the autoclicker-version any more, as the other one is more reliable and thus better, in my opinion. Some unittests are in progress. Made a simple GUI, even though it wasn't a plan. 
 
 ### Installing libraries
 
-To run the program you need to install a couple of libraries, this can be done e.g. running command pip install "library name"
+To run the program you need to install a couple of libraries, this can be done e.g. running command pip install "library name". The project can be run from the mainwindow.py file.
