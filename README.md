@@ -11,6 +11,6 @@ As of 26.12: At the moment there isn't much error handling (e.g faulty bearer to
 ## Future plan update
 I'm not going to update the autoclicker-version any more, as the other one is more reliable and thus better, in my opinion. Some unittests are in progress. Made a simple GUI, even though it wasn't a plan. 
 
-### Installing libraries
+### Used libraries and running the program
 
-To run the program you need to install a couple of libraries, this can be done e.g. running command pip install "library name". The project can be run from the mainwindow.py file.
+Libraries used were PyQt5, requests and Python standard library (time, datetime, sys, json, random, string, unittest). PyQt5 and requests can be installed e.g. from terminal and running command "pip install [library name]". After installing the libraries the project works by running mainwindow.py file.
